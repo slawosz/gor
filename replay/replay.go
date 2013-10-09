@@ -112,7 +112,6 @@ func (self *ReplayManager) RunReplayFromFile() {
 
 	for _, request := range requests {
 
-		parsedReq, err := ParseRequest(request.Request)
 
 		if err != nil {
 			log.Fatal("Can't parse request...:", err)
@@ -120,7 +119,7 @@ func (self *ReplayManager) RunReplayFromFile() {
 
 		time.Sleep(time.Duration(request.Timestamp - lastTimestamp))
 
-		self.sendRequestToReplay(parsedReq)
+		self.sendRequestToReplay(request.Request)
 		lastTimestamp = request.Timestamp
 	}
 
@@ -181,18 +180,12 @@ func (self *ReplayManager) handleConnection(conn net.Conn) error {
 	}
 
 	go func() {
-		if request, err := ParseRequest(response); err != nil {
-			Debug("Error while parsing request", err, response)
-		} else {
-			Debug("Adding request", request)
-
-			self.sendRequestToReplay(request)
-		}
+    self.sendRequestToReplay(response)
 	}()
 
 	return nil
 }
 
-func (self *ReplayManager) sendRequestToReplay(req *http.Request) {
+func (self *ReplayManager) sendRequestToReplay(req []byte) {
 	self.reqFactory.Add(req)
 }

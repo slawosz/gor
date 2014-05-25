@@ -1,3 +1,6 @@
 *.swp
 
 *.gor
+/bin
+/gopath
+.vagrant
